@@ -1,50 +1,4 @@
-const token ='BQASYQeVldmrdSV8kwiP2NiRGlQs-EUjt0uKAJ1qeBzz5g1A8eWNt3So7Jg6n-vurPhjW1IdszyUDJSVPqlR5Ebxkxl28MakyA-kywv7v0oO-pPYx8E'
-const track_id = "11dFghVXANMlKmJXsNCbNl";
-
-
-
-// Getting the client id and client secret from a .env file
-require('dotenv').config();
-
-// console.log(process.env)
-
-client_id = process.env.CLIENT_ID
-client_secret = process.env.CLIENT_SECRET
-
-// console.log(client_id, client_secret)
-
-function getProfile() {
-  fetch("https://api.spotify.com/v1/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
-      console.error("Error", error);
-    });
-}
-
-function getTrack() {
-  fetch(`https://api.spotify.com/v1/tracks/${track_id}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
-async function newToken() {
+export async function newToken() {
   await fetch(`https://accounts.spotify.com/api/token`, {
     method: "POST",
     headers: {
@@ -55,16 +9,23 @@ async function newToken() {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      console.log(data.access_token)
-    //   return data.access_token
-    // token_test = data.access_token
+      token = data.access_token;
+      console.log(token);
     })
     .catch((error) => {
       console.error("Error", error);
     });
 }
 
+export function initiateAuthorization() {
+  const redirectUri = "http://127.0.0.1:5500/success";
+  const authorizationUrl =
+    "https://accounts.spotify.com/authorize" +
+    "?response_type=code" +
+    `&client_id=${client_id}` +
+    "&scope=user-read-private" +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    "&state=your_state";
 
-// newToken()
-getProfile()
-// getTrack()
+  window.location.href = authorizationUrl;
+}
